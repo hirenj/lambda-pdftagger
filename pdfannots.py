@@ -344,13 +344,14 @@ def printannots(fh):
     highlights = [ { 'page': a.pageno + 1, 'text': a.gettext() } for a in allannots if a.tagname == 'highlight' and a.contents is None]
     stamps = [ { 'page': a.pageno + 1, 'text': a.contents } for a in allannots if a.tagname == 'stamp' and a.contents is not None]
 
-    return json.dumps({'stamps': stamps, 'highlights': highlights },indent=4)
+    return {'stamps': stamps, 'highlights': highlights }
 
     #prettyprint(allannots, outlines, mediaboxes)
 
 
 def lambda_handler(event,context={}):
     s3 = boto3.resource('s3')
+    sys.stderr.write("Reading file from %s %s\n" %  (event['bucket'], event['key']))
     fileobj = s3.Object(event['bucket'], event['key']).get()['Body'].read()
     buffer = io.BytesIO()
     buffer.write(fileobj)
@@ -372,7 +373,7 @@ def main():
         sys.exit(1)
     else:
         with fh:
-            print(printannots(fh))
+            print(json.dumps(printannots(fh),indent=4))
 
 if __name__ == "__main__":
     main()
