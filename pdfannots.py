@@ -308,6 +308,9 @@ def printannots(fh):
     allannots = []
 
     for (pageno, page) in enumerate(PDFPage.create_pages(doc)):
+        if pageno > 5:
+            continue
+
         pagesdict[page.pageid] = pageno
         mediaboxes[pageno] = page.mediabox
         if page.annots is None or page.annots == []:
